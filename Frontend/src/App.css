@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+/* global.css */
+::-webkit-scrollbar {
+  width: 4px; /* thin scrollbar */
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.flex-1:hover::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5); /* gray-400 with opacity */
+}
