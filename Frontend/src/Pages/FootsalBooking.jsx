@@ -40,7 +40,7 @@ const FutsalBookingMerged = ({ isAdmin }) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 300, opacity: 0 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="w-full md:w-1/2 rounded-xl shadow-lg overflow-y-auto"
+            className="w-full md:w-1/2 rounded-xl"
           >
             <BookingForm
               slotData={selectedSlot}

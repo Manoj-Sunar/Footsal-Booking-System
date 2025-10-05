@@ -52,6 +52,7 @@ const toFullDate = (date) =>
 const FutsalBookingCalendar = ({ isAdmin, selectedSlot, setSelectedSlot }) => {
   const { openModal } = useModal();
   const today = useMemo(() => new Date(), []);
+
   const todayAtMidnight = useMemo(() => {
     const d = new Date(today);
     d.setHours(0, 0, 0, 0);
@@ -65,6 +66,16 @@ const FutsalBookingCalendar = ({ isAdmin, selectedSlot, setSelectedSlot }) => {
   const [modalPos, setModalPos] = useState({ top: 0, left: 0 });
 
   const buttonRef = useRef(null);
+  const dropdownRefs = useRef(new Set());
+
+  // --- Register/unregister dropdown refs ---
+  const registerDropdown = useCallback((el) => {
+    if (el) dropdownRefs.current.add(el);
+  }, []);
+
+  const unregisterDropdown = useCallback((el) => {
+    dropdownRefs.current.delete(el);
+  }, []);
 
   const { data } = useTimeSlots();
   const timeSlotsData = data?.data || [];
@@ -115,14 +126,19 @@ const FutsalBookingCalendar = ({ isAdmin, selectedSlot, setSelectedSlot }) => {
     [currentMonth, currentYear, setSelectedSlot]
   );
 
-  // Close modal on outside click
+  // --- Handle outside clicks (but ignore dropdown clicks) ---
   useEffect(() => {
     const handleClickOutside = (e) => {
+      for (const dropdown of dropdownRefs.current) {
+        if (dropdown && dropdown.contains(e.target)) return; // inside dropdown
+      }
+
       if (buttonRef.current && !buttonRef.current.contains(e.target)) {
         setSelectedDate(null);
         setShowModal(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -182,7 +198,7 @@ const FutsalBookingCalendar = ({ isAdmin, selectedSlot, setSelectedSlot }) => {
                   if (date && !isPast) {
                     const rect = e.currentTarget.getBoundingClientRect();
                     setModalPos({
-                      top: rect.bottom + window.scrollY + 8, // 8px gap
+                      top: rect.bottom + window.scrollY + 8,
                       left: rect.left + window.scrollX,
                     });
                     setSelectedDate(date);
@@ -297,6 +313,8 @@ const FutsalBookingCalendar = ({ isAdmin, selectedSlot, setSelectedSlot }) => {
                               }),
                           },
                         ].filter(Boolean)}
+                        registerRef={registerDropdown}
+                        unregisterRef={unregisterDropdown}
                       />
                     )}
                   </div>
